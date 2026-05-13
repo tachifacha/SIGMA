@@ -9,8 +9,27 @@ $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
 $flash_success = $_SESSION["flash_success"] ?? "";
 unset($_SESSION["flash_success"]);
+$provDB = null;
+$id = null;
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    if (!isset($_GET["id"])) {
+        header("Location: consultarProv.php");
+        exit();
+    }
+    $id = $_GET["id"];
+
+    $stmt = $pdo->prepare("SELECT * FROM proveedores WHERE id= ?");
+    $stmt->execute([$id]);
+    $provDB = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$provDB) {
+        header("Location: consultarProv.php");
+        exit();
+    }
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id = $_POST["id"];
     $razon_social = trim($_POST["razon_social"]);
     $cuit = trim($_POST["cuit"]);
     $direccion = trim($_POST["direccion"]);
@@ -61,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         try {
             $pdo->beginTransaction();
             $stmt = $pdo->prepare(
-                "INSERT INTO proveedores (razon_social, cuit, email, historial_cumplimiento, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)",
+                "UPDATE proveedores SET razon_social=?, cuit=?, email=?, historial_cumplimiento=?, direccion=?, telefono=? WHERE id=?",
             );
             $stmt->execute([
                 $razon_social,
@@ -70,20 +89,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $historial_cumplimiento,
                 $direccion,
                 $telefono,
+                $id,
             ]);
             $pdo->commit();
-            $_SESSION["flash_success"] = "Proveedor añadido correctamente";
-            header("Location: añadirProv.php");
+            $_SESSION["flash_success"] = "Proveedor actualizado correctamente";
+            header("Location: editarProv.php?id=" . $id);
             exit();
         } catch (Exception $e) {
             $pdo->rollBack();
-            $errores[] = "Error al añadir proveedor" . $e->getMessage();
+            $errores[] = "Error al editar proveedor" . $e->getMessage();
         }
     }
 
     if (!empty($errores)) {
         $_SESSION["flash_errors"] = $errores;
-        header("Location: añadirProv.php");
+        header("Location: editarProv.php?id=" . $id);
         exit();
     }
 }
@@ -93,48 +113,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Añadir Proveedor</title>
+    <title>Editar Proveedor</title>
 </head>
 <body>
     <?php if (!empty($flash_errors)): ?>
     <div class="flash-messages">
         <?php foreach ($flash_errors as $err): ?>
-            <div class="flash-msg flash-msg--error"><?= htmlspecialchars(
-                $err,
-            ) ?></div>
+            <div class="flash-msg flash-msg--error"><?= htmlspecialchars($err) ?></div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
 
     <?php if ($flash_success): ?>
-        <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
-            $flash_success,
-        ) ?></div>
+        <div class="flash-msg flash-msg--success"><?= htmlspecialchars($flash_success) ?></div>
     <?php endif; ?>
-    <h1>Añadir Proveedor</h1>
-    <form action="añadirProv.php" method="post">
+
+    <h1>Editar Proveedor</h1>
+
+    <?php if ($provDB): ?>
+    <form action="editarProv.php" method="post">
+        <input type="hidden" name="id" value="<?= $provDB["id_proveedor"] ?>">
         <label for="razon_social">Razón Social:</label>
-        <input type="text" id="razon_social" name="razon_social" placeholder="Tu Razon Social" required>
+        <input type="text" id="razon_social" name="razon_social" value="<?= htmlspecialchars($provDB["razon_social"]) ?>" required>
         <br>
         <label for="cuit">CUIT:</label>
-        <input type="text" id="cuit" name="cuit" placeholder="CUIT sin guiones" required>
+        <input type="text" id="cuit" name="cuit" value="<?= htmlspecialchars($provDB["cuit"]) ?>" required>
         <br>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" placeholder="TuEmail@example.com" required>
+        <input type="email" id="email" name="email" value="<?= htmlspecialchars($provDB["email"]) ?>" required>
         <br>
         <label for="historial_cumplimiento">Historial de Cumplimiento:</label>
-        <input type="text" id="historial_cumplimiento" name="historial_cumplimiento" required>
+        <input type="text" id="historial_cumplimiento" name="historial_cumplimiento" value="<?= htmlspecialchars($provDB["historial_cumplimiento"]) ?>" required>
         <br>
         <label for="direccion">Dirección:</label>
-        <input type="text" id="direccion" name="direccion" placeholder="Tu Dirección 123" required>
+        <input type="text" id="direccion" name="direccion" value="<?= htmlspecialchars($provDB["direccion"]) ?>" required>
         <br>
         <label for="telefono">Teléfono:</label>
-        <input type="number" id="telefono" name="telefono" placeholder="12345678910" required>
+        <input type="number" id="telefono" name="telefono" value="<?= htmlspecialchars($provDB["telefono"]) ?>" required>
         <br>
-        <button type="submit">Añadir</button>
+        <button type="submit">Guardar cambios</button>
     </form>
-    <button>
-        <a href="apuntar a index despues">Volver a inicio</a>
-    </button>
+    <?php endif; ?>
+    <button><a href="consultarProv.php">Volver</a></button>
 </body>
 </html>
