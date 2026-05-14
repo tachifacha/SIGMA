@@ -19,18 +19,18 @@ $materiales = $pdo
     ->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $proveedor = trim($_POST["id_proveedor"]);
+    $id_proveedor = trim($_POST["id_proveedor"]);
     $fecha_emision = trim($_POST["fecha_emision"]);
-    $material = trim($_POST["id_material"]);
+    $id_material = trim($_POST["id_material"]);
     $cantidad = trim($_POST["cantidad"]);
     $precio = trim($_POST["precio"]);
     $estado = trim($_POST["estado"]);
 
     // validaciones
     if (
-        empty($proveedor) ||
+        empty($id_proveedor) ||
         empty($fecha_emision) ||
-        empty($material) ||
+        empty($id_material) ||
         empty($cantidad) ||
         empty($precio) ||
         empty($estado)
@@ -50,12 +50,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmtoc = $pdo->prepare(
                 "INSERT INTO ordenes_compra (id_proveedor, fecha_emision, estado) VALUES (?,?,'EMITIDA')",
             );
-            $stmtoc->execute([$proveedor, $fecha_emision]);
+            $stmtoc->execute([$id_proveedor, $fecha_emision]);
             $id_oc = $pdo->lastInsertId();
             $stmtocd = $pdo->prepare(
                 "INSERT INTO oc_detalle (id_oc, id_material, cantidad, precio) VALUES (?,?,?,?)",
             );
-            $stmtocd->execute([$id_oc, $material, $cantidad, $precio]);
+            $stmtocd->execute([$id_oc, $id_material, $cantidad, $precio]);
             $pdo->commit();
             $_SESSION["flash_success"] =
                 "Orden de compra añadida correctamente";
@@ -73,3 +73,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Añadir orden de compra</title>
+</head>
+<body>
+    <?php if (!empty($flash_errors)): ?>
+    <div class="flash-messages">
+        <?php foreach ($flash_errors as $err): ?>
+            <div class="flash-msg flash-msg--error"><?= htmlspecialchars(
+                $err,
+            ) ?></div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($flash_success): ?>
+        <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
+            $flash_success,
+        ) ?></div>
+    <?php endif; ?>
+<h1>Añadir orden de compra</h1>
+<form action="añadirOc.php" method="post">
+    <label for="id_proveedor">Proveedor:</label>
+    <select name="id_proveedor" required>
+        <option value="">Seleccione un proveedor</option>
+        <?php foreach ($proveedores as $p): ?>
+        <option value="<?= $p["id_proveedor"] ?>">
+            <?= htmlspecialchars($p["razon_social"]) ?>
+        </option>
+        <?php endforeach; ?>
+    </select>
+    <br>
+    <label for="fecha_emision">Fecha Emision:</label>
+    <input type="date" id="fecha_emision" name="fecha_emision" required>
+    <br>
+    <label for="id_material">Material:</label>
+    <select name="id_material" required>
+        <option value="">Seleccione un material</option>
+    </select>
+</form>
+</body>
+</html>
