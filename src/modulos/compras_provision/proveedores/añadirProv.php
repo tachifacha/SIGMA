@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "../../config/conexion.php";
+require "../../../config/conexion.php";
 
 $pdo = db::connect();
 $errores = [];
@@ -117,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input type="text" id="razon_social" name="razon_social" placeholder="Tu Razon Social" required>
         <br>
         <label for="cuit">CUIT:</label>
-        <input type="text" id="cuit" name="cuit" placeholder="CUIT sin guiones" required>
+        <input type="text" id="cuit" name="cuit" placeholder="CUIT sin guiones (11 dígitos)" required>
         <br>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" placeholder="TuEmail@example.com" required>

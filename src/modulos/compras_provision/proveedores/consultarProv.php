@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "../../config/conexion.php";
+require "../../../config/conexion.php";
 
 $pdo = db::connect();
 $errores = [];
@@ -39,7 +39,8 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
         <?php endif; ?>
     </div>
     <?php endif; ?>
-    <table>
+    <button><a href="añadirProv.php">Añadir</a></button>
+    <table border="1">
         <thead>
             <tr>
                 <th>Razon social</th>
@@ -54,23 +55,20 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
         <tbody>
             <?php foreach ($consulta as $c): ?>
             <tr>
-                <td><?= htmlspecialchars($c["Razon_social"]) ?></td>
-                <td><?= htmlspecialchars($c["CUIT"]) ?></td>
-                <td><?= htmlspecialchars($c["Email"]) ?></td>
-                <td><?= htmlspecialchars($c["Historial_cumplimiento"]) ?></td>
-                <td><?= htmlspecialchars($c["Direccion"]) ?></td>
-                <td><?= htmlspecialchars($c["Telefono"]) ?></td>
+                <td><?= htmlspecialchars($c["razon_social"]) ?></td>
+                <td><?= htmlspecialchars($c["cuit"]) ?></td>
+                <td><?= htmlspecialchars($c["email"]) ?></td>
+                <td><?= htmlspecialchars($c["historial_cumplimiento"]) ?></td>
+                <td><?= htmlspecialchars($c["direccion"]) ?></td>
+                <td><?= htmlspecialchars($c["telefono"]) ?></td>
                 <div> <!-- acciones -->
-                    <td><a href="añadirProv.php">Añadir</a></td>
-                    <td><a href="editarProv.php?id=<?= $c[
+                    <td>
+                    <button><a href="editarProv.php?id=<?= $c[
                         "id_proveedor"
-                    ] ?>">Editar</a></td>
-                    <form action="eliminarUs.php" method="POST">
-                        <input type="hidden" name="id" value="<?= htmlspecialchars(
-                            $c["id_jugador"],
-                        ) ?>">
-                        <button type="submit" onclick="return confirm('¿Estás seguro de eliminar el registro?');">Eliminar</button>
-                    </form>
+                    ] ?>">Editar</a></button>
+                    <button><a href="eliminarProv.php?id=<?= $c[
+                        "id_proveedor"
+                    ] ?>">Eliminar</a></td>
                 </div>
             </tr>
             <?php endforeach; ?>

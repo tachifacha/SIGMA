@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "../../config/conexion.php";
+require "../../../config/conexion.php";
 
 $pdo = db::connect();
 

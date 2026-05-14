@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "../../config/conexion.php";
+require "../../../config/conexion.php";
 
 $pdo = db::connect();
 $errores = [];
@@ -13,13 +13,13 @@ $provDB = null;
 $id = null;
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    if (!isset($_GET["id"])) {
+    if (!isset($_GET["id_proveedor"])) {
         header("Location: consultarProv.php");
         exit();
     }
-    $id = $_GET["id"];
+    $id = $_GET["id_proveedor"];
 
-    $stmt = $pdo->prepare("SELECT * FROM proveedores WHERE id= ?");
+    $stmt = $pdo->prepare("SELECT * FROM proveedores WHERE id_proveedor= ?");
     $stmt->execute([$id]);
     $provDB = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST["id"];
+    $id = $_POST["id_proveedor"];
     $razon_social = trim($_POST["razon_social"]);
     $cuit = trim($_POST["cuit"]);
     $direccion = trim($_POST["direccion"]);
@@ -119,13 +119,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php if (!empty($flash_errors)): ?>
     <div class="flash-messages">
         <?php foreach ($flash_errors as $err): ?>
-            <div class="flash-msg flash-msg--error"><?= htmlspecialchars($err) ?></div>
+            <div class="flash-msg flash-msg--error"><?= htmlspecialchars(
+                $err,
+            ) ?></div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
 
     <?php if ($flash_success): ?>
-        <div class="flash-msg flash-msg--success"><?= htmlspecialchars($flash_success) ?></div>
+        <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
+            $flash_success,
+        ) ?></div>
     <?php endif; ?>
 
     <h1>Editar Proveedor</h1>
@@ -134,22 +138,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form action="editarProv.php" method="post">
         <input type="hidden" name="id" value="<?= $provDB["id_proveedor"] ?>">
         <label for="razon_social">Razón Social:</label>
-        <input type="text" id="razon_social" name="razon_social" value="<?= htmlspecialchars($provDB["razon_social"]) ?>" required>
+        <input type="text" id="razon_social" name="razon_social" value="<?= htmlspecialchars(
+            $provDB["razon_social"],
+        ) ?>" required>
         <br>
         <label for="cuit">CUIT:</label>
-        <input type="text" id="cuit" name="cuit" value="<?= htmlspecialchars($provDB["cuit"]) ?>" required>
+        <input type="text" id="cuit" name="cuit" value="<?= htmlspecialchars(
+            $provDB["cuit"],
+        ) ?>" required>
         <br>
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?= htmlspecialchars($provDB["email"]) ?>" required>
+        <input type="email" id="email" name="email" value="<?= htmlspecialchars(
+            $provDB["email"],
+        ) ?>" required>
         <br>
         <label for="historial_cumplimiento">Historial de Cumplimiento:</label>
-        <input type="text" id="historial_cumplimiento" name="historial_cumplimiento" value="<?= htmlspecialchars($provDB["historial_cumplimiento"]) ?>" required>
+        <input type="text" id="historial_cumplimiento" name="historial_cumplimiento" value="<?= htmlspecialchars(
+            $provDB["historial_cumplimiento"],
+        ) ?>" required>
         <br>
         <label for="direccion">Dirección:</label>
-        <input type="text" id="direccion" name="direccion" value="<?= htmlspecialchars($provDB["direccion"]) ?>" required>
+        <input type="text" id="direccion" name="direccion" value="<?= htmlspecialchars(
+            $provDB["direccion"],
+        ) ?>" required>
         <br>
         <label for="telefono">Teléfono:</label>
-        <input type="number" id="telefono" name="telefono" value="<?= htmlspecialchars($provDB["telefono"]) ?>" required>
+        <input type="number" id="telefono" name="telefono" value="<?= htmlspecialchars(
+            $provDB["telefono"],
+        ) ?>" required>
         <br>
         <button type="submit">Guardar cambios</button>
     </form>
