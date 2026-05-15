@@ -61,15 +61,15 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
                 <td><?= htmlspecialchars($c["historial_cumplimiento"]) ?></td>
                 <td><?= htmlspecialchars($c["direccion"]) ?></td>
                 <td><?= htmlspecialchars($c["telefono"]) ?></td>
-                <div> <!-- acciones -->
-                    <td>
+                <!-- acciones -->
+                <td>
                     <button><a href="editarProv.php?id=<?= $c[
                         "id_proveedor"
                     ] ?>">Editar</a></button>
                     <button><a href="eliminarProv.php?id=<?= $c[
                         "id_proveedor"
-                    ] ?>">Eliminar</a></td>
-                </div>
+                    ] ?>">Eliminar</a></button>
+                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
