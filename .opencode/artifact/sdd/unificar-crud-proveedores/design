@@ -1,0 +1,92 @@
+# Design: Unificar CRUD Proveedores
+
+## Technical Approach
+The refactor consolidates three separate PHP files (consultarProv.php, añadirProv.php, editarProv.php) into two unified files:
+1. proveedores.php - Single HTML page combining provider listing table and add/edit form
+2. guardarProv.php - Single processing file handling both CREATE and UPDATE operations via POST
+
+The eliminarProv.php remains unchanged as it's already simple and GET-based. Shared validation and database connection logic will be moved to include/common.php.
+
+## Architecture Decisions
+1. **Unified Interface**: proveedores.php serves both listing and form purposes, reducing navigation overhead
+2. **Single Responsibility Processing**: guardarProv.php handles all write operations (CREATE/UPDATE) with clear separation of concerns
+3. **Shared Validation**: Moving validation to common.php eliminates duplication and ensures consistency
+4. **POST/Redirect/Get Pattern**: Prevents form resubmission and provides clean UX with flash messages
+5. **Edit Detection**: Uses URL parameter ?edit=X to distinguish between create and edit modes
+6. **Hidden ID Field**: Form includes hidden id field when editing to signal UPDATE vs INSERT to guardarProv.php
+
+## Data Flow
+1. **Initial Load**: User visits proveedores.php (no edit param) → displays provider table + empty form
+2. **Edit Load**: User clicks "Editar" → navigate to proveedores.php?edit=5 → loads provider data into form
+3. **Form Submission**: User submits form → POST to guardarProv.php
+4. **Processing**: guardarProv.php:
+   - Reads POST data
+   - Validates using shared functions from common.php
+   - If id present → UPDATE query
+   - If id absent → INSERT query
+   - Sets flash messages in session
+   - Redirects back to proveedores.php (with edit param if applicable)
+5. **Display**: proveedores.php reads flash messages from session and displays them
+6. **Delete**: User clicks "Eliminar" → GET to eliminarProv.php → deletes record → redirects to proveedores.php
+
+## File Changes
+| File | Action | Description |
+|------|--------|-------------|
+| proveedores.php | New | Unified listing and form page with edit mode detection via ?edit=X |
+| guardarProv.php | New | Single processor for CREATE/UPDATE operations with validation |
+| include/common.php | New | Shared logic: db connection, validation functions, flash helpers |
+| consultarProv.php | Delete | Replaced by proveedores.php |
+| añadirProv.php | Delete | Replaced by proveedores.php + guardarProv.php |
+| editarProv.php | Delete | Replaced by proveedores.php + guardarProv.php |
+| eliminarProv.php | Keep | Unchanged (simple GET-based delete) |
+
+## Interfaces / Contracts
+**Validation Functions (in include/common.php):**
+- validateRazonSocial(string $razonSocial, PDO $pdo, int $excludeId = null): string|null
+- validateCUIT(string $cuit, PDO $pdo, int $excludeId = null): string|null
+- validateEmail(string $email): string|null
+- validateRequired(array $fields): string|null
+- flashMessage(string $type, string $message): void
+- getFlashMessages(): array
+
+**guardarProv.php POST Parameters:**
+- razon_social (string, required)
+- cuit (string, required, 11 chars)
+- email (string, required, valid email)
+- historial_cumplimiento (string, required)
+- direccion (string, required)
+- telefono (string, required)
+- id (integer, optional - if present triggers UPDATE, absent triggers CREATE)
+
+**proveedores.php URL Parameters:**
+- edit (integer, optional - if present loads provider data for editing)
+
+## Testing Strategy
+Since no PHP test framework exists, manual testing will verify:
+1. **Create Flow**: 
+   - Load proveedores.php → submit valid form → see success message → provider appears in table
+   - Submit invalid form → see appropriate error messages
+2. **Edit Flow**:
+   - Click "Editar" on a provider → form pre-filled with existing data
+   - Submit changes → see success message → table reflects updates
+   - Attempt to update with duplicate razon_social/CUIT (excluding self) → see validation error
+3. **Delete Flow**:
+   - Click "Eliminar" → see success message → provider removed from table
+4. **Edge Cases**:
+   - Accessing proveedores.php?edit=999 (non-existent) → redirect to listing with error
+   - Form resubmission prevention via POST/Redirect/Get
+   - Flash messages display correctly and clear after display
+
+## Migration / Rollout
+No database migration required as schema remains unchanged. File replacement is atomic:
+1. Create new files (proveedores.php, guardarProv.php, include/common.php)
+2. Verify all functionality works
+3. Delete old files (consultarProv.php, añadirProv.php, editarProv.php)
+4. eliminarProv.php remains untouched
+
+## Open Questions
+1. Should we keep the "Volver a inicio" links or standardize navigation?
+2. Should flash message styling be standardized in common.php or kept in individual files?
+3. Should we add CSRF protection to the forms?
+4. Should the telefono field remain as number type or change to text to handle leading zeros/formatting?
+5. Should we add client-side validation in addition to server-side validation?

@@ -11,13 +11,13 @@ if ($id) {
         $stmt = $pdo->prepare("DELETE FROM proveedores WHERE id_proveedor=?");
         $stmt->execute([$id]);
         $_SESSION["flash_success"][] = "Proveedor eliminado correctamente";
-        header("Location: consultarProv.php");
+        header("Location: proveedores.php");
         exit();
     } catch (Exception $e) {
         $_SESSION["flash_errors"] = [
             "Error al eliminar proveedor: " . $e->getMessage(),
         ];
-        header("Location: consultarProv.php");
+        header("Location: proveedores.php");
         exit();
     }
 }
