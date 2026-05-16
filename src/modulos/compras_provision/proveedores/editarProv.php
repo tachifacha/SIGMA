@@ -7,7 +7,7 @@ $errores = [];
 $correcto = false;
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $flash_success = $_SESSION["flash_success"] ?? [];
+$flash_success = $_SESSION["flash_success"] ?? "";
 unset($_SESSION["flash_success"]);
 $provDB = null;
 $id = null;
@@ -92,8 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $id,
             ]);
             $pdo->commit();
-            $_SESSION["flash_success"][] =
-                "Proveedor actualizado correctamente";
+            $_SESSION["flash_success"] = "Proveedor actualizado correctamente";
             header("Location: editarProv.php?id=" . $id);
             exit();
         } catch (Exception $e) {
