@@ -7,17 +7,17 @@ $errores = [];
 $correcto = false;
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $_SESSION["flash_success"] ?? "";
+$flash_success = $flash_success = $_SESSION["flash_success"] ?? [];
 unset($_SESSION["flash_success"]);
 $provDB = null;
 $id = null;
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    if (!isset($_GET["id_proveedor"])) {
+    if (!isset($_GET["id"])) {
         header("Location: consultarProv.php");
         exit();
     }
-    $id = $_GET["id_proveedor"];
+    $id = $_GET["id"];
 
     $stmt = $pdo->prepare("SELECT * FROM proveedores WHERE id_proveedor= ?");
     $stmt->execute([$id]);
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST["id_proveedor"];
+    $id = $_POST["id"];
     $razon_social = trim($_POST["razon_social"]);
     $cuit = trim($_POST["cuit"]);
     $direccion = trim($_POST["direccion"]);
@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $pdo->beginTransaction();
             $stmt = $pdo->prepare(
-                "UPDATE proveedores SET razon_social=?, cuit=?, email=?, historial_cumplimiento=?, direccion=?, telefono=? WHERE id=?",
+                "UPDATE proveedores SET razon_social=?, cuit=?, email=?, historial_cumplimiento=?, direccion=?, telefono=? WHERE id_proveedor=?",
             );
             $stmt->execute([
                 $razon_social,
@@ -92,7 +92,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $id,
             ]);
             $pdo->commit();
-            $_SESSION["flash_success"] = "Proveedor actualizado correctamente";
+            $_SESSION["flash_success"][] =
+                "Proveedor actualizado correctamente";
             header("Location: editarProv.php?id=" . $id);
             exit();
         } catch (Exception $e) {

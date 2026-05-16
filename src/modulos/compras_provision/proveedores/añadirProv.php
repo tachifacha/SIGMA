@@ -7,7 +7,7 @@ $errores = [];
 $correcto = false;
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $_SESSION["flash_success"] ?? "";
+$flash_success = $flash_success = $_SESSION["flash_success"] ?? "";SESSION["flash_success"] ?? [];
 unset($_SESSION["flash_success"]);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $telefono,
             ]);
             $pdo->commit();
-            $_SESSION["flash_success"] = "Proveedor añadido correctamente";
+                        $_SESSION["flash_success"] = "Proveedor añadido correctamente";SESSION["flash_success"][] = "Proveedor añadido correctamente";
             header("Location: añadirProv.php");
             exit();
         } catch (Exception $e) {

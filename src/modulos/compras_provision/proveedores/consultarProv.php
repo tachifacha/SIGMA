@@ -7,7 +7,7 @@ $errores = [];
 $correcto = false;
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $_SESSION["flash_success"] ?? "";
+$flash_success = $_SESSION["flash_success"] ?? [];
 unset($_SESSION["flash_success"]);
 
 $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
@@ -63,12 +63,12 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
                 <td><?= htmlspecialchars($c["telefono"]) ?></td>
                 <!-- acciones -->
                 <td>
-                    <button><a href="editarProv.php?id=<?= $c[
+                    <a href="editarProv.php?id=<?= $c[
                         "id_proveedor"
-                    ] ?>">Editar</a></button>
-                    <button><a href="eliminarProv.php?id=<?= $c[
+                    ] ?>">Editar</a>
+                    <a href="eliminarProv.php?id=<?= $c[
                         "id_proveedor"
-                    ] ?>">Eliminar</a></button>
+                    ] ?>">Eliminar</a>
                 </td>
             </tr>
             <?php endforeach; ?>
