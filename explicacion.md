@@ -211,3 +211,306 @@ Antes de enviar el formulario:
 3. **Mejora la UI:** Agrega un mensaje cuando no hay materiales disponibles
 4. **Experimenta con eventos:** En vez de `input`, prueba con `change` en el campo de cantidad y nota la diferencia
 5. **Revisa el HTML asociado:** Mira cómo está estructurada la tabla y la plantilla para entender mejor los selectores usados
+
+---
+
+## Apéndice: Explicación detallada de los bloques 2 y 3
+
+### Bloque 2 — Fetch API: cómo habla JS con el servidor
+
+```javascript
+fetch('../api/materiales.php')
+  .then(res => res.json())
+  .then(data => {
+    // acá hacemos cosas con los materiales
+  })
+  .catch(err => console.error('Error cargando materiales:', err));
+```
+
+#### ¿Qué está pasando acá?
+
+Imaginate que vos estás en un restaurante. El **cliente** sos JavaScript (el navegador). El **cocinero** es el servidor con `materiales.php`. El **menú** es la lista de materiales.
+
+```javascript
+fetch('../api/materiales.php')
+```
+
+Esto es como **pedirle el menú al mozo**. Le decís al navegador: "andá a esta dirección del servidor y traeme lo que haya".
+
+La dirección `../api/materiales.php` significa: "subí un nivel desde donde estoy (`../`), entrá a la carpeta `api/`, y ejecutá el archivo `materiales.php`". Ese archivo PHP probablemente hace una consulta SQL tipo `SELECT * FROM materiales` y devuelve el resultado.
+
+#### El gran problema: el servidor es lento (asincronía)
+
+Acá viene el concepto más IMPORTANTE que tenés que entender en JavaScript:
+
+**El servidor puede tardar**. 1 segundo, 3 segundos, hasta 30 segundos si hay un problema. Mientras tanto, el navegador NO se puede congelar porque entonces el usuario no podría ni mover el mouse.
+
+JavaScript resuelve esto con **programación asincrónica**. Es como pedir un café: vos no te quedás mirando fijo la máquina de café; hacés otra cosa y cuando el café está listo, te avisan.
+
+```javascript
+fetch(...)  // Esto NO bloquea. Es como "pedí el café, seguí con tu vida"
+  .then(...)  // Esto es "cuando el café esté listo, ejecutá esto"
+```
+
+#### La promesa
+
+`fetch()` devuelve un objeto llamado **Promise** (promesa). Una promesa es exactamente lo que suena: "prometo que en el futuro te voy a dar un resultado, pero no sé cuándo exactamente".
+
+Una promesa tiene 3 estados:
+- **Pending** (pendiente): todavía no se resolvió
+- **Fulfilled** (cumplida): salió bien, tengo los datos
+- **Rejected** (rechazada): salió mal, tengo un error
+
+#### .then() — cuando sale bien
+
+```javascript
+.then(res => res.json())
+```
+
+El primer `.then()` recibe la respuesta cruda del servidor (un objeto `Response`). Ese objeto tiene metadatos: código de estado HTTP (200, 404, 500), headers, etc.
+
+`res.json()` es OTRA promesa. ¿Por qué? Porque el cuerpo de la respuesta puede ser enorme y tarda en procesarse. Entonces tenés que esperar otra vez.
+
+Es como:
+1. `fetch` → "recibí el paquete"
+2. `res.json()` → "ahora abrí el paquete y convertí lo de adentro (JSON) en un objeto JavaScript usable"
+
+```javascript
+.then(data => {
+  // data ya es un array/objeto JavaScript real
+})
+```
+
+Acá `data` ya no es texto JSON. Ya es un array de objetos JavaScript con el que podés trabajar directamente: `data.forEach(...)`, `data.length`, `data[0].nombre`, etc.
+
+#### .catch() — cuando sale mal
+
+```javascript
+.catch(err => console.error('Error cargando materiales:', err));
+```
+
+Si la red se cae, el servidor devuelve 500, o hay un error de conexión, esto se ejecuta. Sin esto, tu página se queda en silencio y el usuario piensa que funciona cuando en realidad falló.
+
+#### Versión moderna con async/await (para que lo reconozcas)
+
+Muchos códigos modernos escriben esto así:
+
+```javascript
+async function cargarMateriales() {
+  try {
+    const res = await fetch('../api/materiales.php');
+    const data = await res.json();
+    // usamos data
+  } catch (err) {
+    console.error('Error:', err);
+  }
+}
+```
+
+Es exactamente lo mismo. `async/await` es solo **azúcar sintáctica** sobre `.then()` y promesas. Hace que el código se lea como si fuera sincrónico.
+
+#### Analogía completa del restaurant
+
+| Código | Analogía |
+|--------|----------|
+| `fetch(...)` | Pedir el menú al mozo |
+| La URL `../api/materiales.php` | La cocina donde está el menú |
+| `.then(res => res.json())` | Esperar que el mozo traiga el menú a tu mesa |
+| `.then(data => ...)` | Abrir el menú y elegir qué comer |
+| `.catch(err => ...)` | Si el mozo se cayó, pedir disculpas |
+
+---
+
+### Bloque 3 — Organizar datos en memoria
+
+```javascript
+const materialesAgrupados = {};
+
+data.forEach(mat => {
+  const cat = mat.nombre_categoria || 'Sin categoría';
+  if (!materialesAgrupados[cat]) {
+    materialesAgrupados[cat] = [];
+  }
+  materialesAgrupados[cat].push({
+    id: mat.id_material,
+    nombre: mat.nombre,
+    unidad: mat.unidad_medida,
+    precio: parseFloat(mat.precio_compra) || 0
+  });
+});
+```
+
+#### ¿Qué problema resuelve?
+
+El servidor devuelve un array plano como este:
+
+```javascript
+[
+  { id_material: 1, nombre: "Tornillo plano", nombre_categoria: "Tornillos", unidad_medida: "uds", precio_compra: "10.50" },
+  { id_material: 2, nombre: "Tornillo Phillips", nombre_categoria: "Tornillos", unidad_medida: "uds", precio_compra: "12.00" },
+  { id_material: 3, nombre: "Pino tratado", nombre_categoria: "Madera", unidad_medida: "mts", precio_compra: "250.00" },
+  { id_material: 4, nombre: "Clavo 2\"", nombre_categoria: "Tornillos", unidad_medida: "kg", precio_compra: "8.00" }
+]
+```
+
+Pero en el HTML, querés mostrarlos agrupados así en el `<select>`:
+
+```
+-- Seleccione --
+▼ Tornillos
+     Tornillo plano
+     Tornillo Phillips
+     Clavo 2"
+▼ Madera
+     Pino tratado
+```
+
+HTML no tiene una forma mágica de agrupar opciones. Necesitás un `optgroup` por categoría. Y para eso, necesitás los datos YA agrupados en una estructura que te lo facilite.
+
+#### El objeto como mapa (no como clase)
+
+```javascript
+const materialesAgrupados = {};
+```
+
+`{}` se lee como "objeto literal vacío". Pero acá NO está siendo usado como una "clase" o "instancia" al estilo POO. Lo está usando como **mapa** o **diccionario**.
+
+En otros lenguajes, usarías `new HashMap<String, List<Material>>()` o similar. En JavaScript, usás un objeto `{}` — que no es más que una colección de pares clave → valor.
+
+Al final, `materialesAgrupados` se ve así:
+
+```javascript
+{
+  "Tornillos": [
+    { id: 1, nombre: "Tornillo plano", ... },
+    { id: 2, nombre: "Tornillo Phillips", ... },
+    { id: 4, nombre: "Clavo 2\"", ... }
+  ],
+  "Madera": [
+    { id: 3, nombre: "Pino tratado", ... }
+  ]
+}
+```
+
+Las **claves** son nombres de categoría (`"Tornillos"`, `"Madera"`).
+Los **valores** son arrays de materiales.
+
+#### Paso a paso de cómo se construye
+
+```javascript
+data.forEach(mat => {
+```
+
+`forEach` recorre CADA elemento del array `data`. Por cada elemento, ejecuta la función que le pasás. Es como decir: "para cada material en la lista, haceme esto".
+
+---
+
+```javascript
+const cat = mat.nombre_categoria || 'Sin categoría';
+```
+
+`||` acá NO es un booleano "true or false". En JavaScript, `||` se llama **operador de cortocircuito** (short-circuit). Funciona así:
+
+- Si lo de la izquierda es "truthy" (existe, no es null, no es undefined, no es cadena vacía), usá ESO.
+- Si lo de la izquierda es "falsy" (null, undefined, 0, `""`, false), usá lo de la derecha.
+
+Es un **valor por defecto** en una línea. Si el material no tiene `nombre_categoria`, en vez de tener `undefined`, le ponés `'Sin categoría'`.
+
+---
+
+```javascript
+if (!materialesAgrupados[cat]) {
+  materialesAgrupados[cat] = [];
+}
+```
+
+Acá verificás: "¿Ya existe una entrada para esta categoría en mi objeto?"
+
+- Si NO existe (`!materialesAgrupados[cat]` → `!undefined` → `true`), creala como un array vacío.
+- Si ya existe (porque otro material de la misma categoría ya la creó), no hagas nada, usá la que ya está.
+
+---
+
+```javascript
+materialesAgrupados[cat].push({
+  id: mat.id_material,
+  nombre: mat.nombre,
+  unidad: mat.unidad_medida,
+  precio: parseFloat(mat.precio_compra) || 0
+});
+```
+
+Agregá el material al array de su categoría. Notá que acá NO estamos usando el objeto original `mat` directamente. **Estamos creando un NUEVO objeto** con propiedades renombradas y transformadas:
+
+- `mat.id_material` → `id` (más corto)
+- `mat.precio_compra` (string `"10.50"`) → `parseFloat(...)` → `precio` (número `10.5`)
+- También aplica el cortocircuito: si `parseFloat` da `NaN` (no se pudo convertir), poné `0`
+
+#### ¿Por qué NO usar el objeto original `mat` directamente?
+
+Porque:
+1. **Renombrás propiedades** para que sean más manejables en el frontend (`id_material` → `id`)
+2. **Convertís tipos**: `precio_compra` viene como string del JSON. Lo pasás a número con `parseFloat`
+3. **Eliminás basura**: si el servidor devuelve 20 propiedades y solo necesitás 4, no arrastrás las otras 16
+
+#### Analogía de la biblioteca
+
+Imaginate que recibís un montón de libros todos mezclados en una caja:
+
+```
+data = [Libro1, Libro2, Libro3, ...]
+```
+
+Y querés ordenarlos en una estantería por género:
+
+```javascript
+const estanteria = {};
+
+data.forEach(libro => {
+  const genero = libro.genero || 'Sin género';
+
+  if (!estanteria[genero]) {
+    estanteria[genero] = [];  // creo un estante vacío para este género
+  }
+
+  estanteria[genero].push({
+    titulo: libro.titulo,
+    autor: libro.autor
+  });
+});
+```
+
+Al final, `estanteria` se ve así:
+
+```
+{
+  "Ficción": [ { titulo: "1984", autor: "Orwell" }, ... ],
+  "Ciencia": [ { titulo: "Breve historia del tiempo", autor: "Hawking" } ],
+  "Sin género": [ ... ]
+}
+```
+
+Ahora, cuando querés mostrarle los libros al usuario agrupados por género, ya los tenés listos.
+
+#### Lo que MÁS cuesta entender acá (y es clave)
+
+Fijate que al principio `materialesAgrupados` es un objeto VACÍO `{}`.
+
+Después de la primera iteración (`mat = { id_material: 1, nombre_categoria: "Tornillos", ... }`):
+
+```javascript
+materialesAgrupados["Tornillos"] = [];  // ← esto MODIFICA el objeto original
+materialesAgrupados["Tornillos"].push({ id: 1, ... });  // ← agrega al array
+```
+
+Después de la segunda iteración (`mat = { id_material: 2, nombre_categoria: "Tornillos", ... }`):
+
+```javascript
+// materialesAgrupados["Tornillos"] YA EXISTE, así que NO se sobreescribe
+// directamente se pushea el nuevo material
+materialesAgrupados["Tornillos"].push({ id: 2, ... });
+```
+
+**El objeto `materialesAgrupados` se va construyendo de a poco, mutación tras mutación.** No se asigna un objeto nuevo cada vez. Se va modificando el mismo objeto en cada vuelta del `forEach`.
+
+Es como si tuvieras una caja de herramientas vacía y fueras agregando herramientas a medida que las necesitás. La caja es siempre la misma, pero su contenido cambia.
