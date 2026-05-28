@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     // los => se entienden como forma de definir funciones mas acortadas
     // entonces (res => res.json()) es una función que recibe res y devuelve res.json()
+    // el nombre del parametro no importa porque JS entiende el orden de promesas
     // """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     .then((res) => res.json())
     // recibe los datos, los llama data y los agrupa por categoría
