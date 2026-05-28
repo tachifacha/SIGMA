@@ -83,12 +83,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function poblarSelect(selectEl) {
+    // vacia el select y pone un placeholder
     selectEl.innerHTML = '<option value="">-- Seleccione --</option>';
-
+    // recorre las categorías y agrega un optgroup por cada una
     Object.keys(materialesAgrupados).forEach((categoria) => {
       const optgroup = document.createElement("optgroup");
       optgroup.label = categoria;
-
+      // crea un option por cada material en la categoría
       materialesAgrupados[categoria].forEach((mat) => {
         const option = document.createElement("option");
         option.value = mat.id;
@@ -97,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
         option.textContent = mat.nombre;
         optgroup.appendChild(option);
       });
-
+      //agrega arriba cada opcion al optgroup y cada optgroup al select
       selectEl.appendChild(optgroup);
     });
   }
