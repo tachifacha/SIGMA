@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-05-2026 a las 20:30:34
+-- Tiempo de generación: 29-05-2026 a las 20:52:52
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -369,33 +369,33 @@ CREATE TABLE `oc_detalle` (
   `id_oc` int(11) NOT NULL,
   `id_material` int(11) NOT NULL,
   `cantidad` decimal(10,2) DEFAULT NULL,
-  `precio_unitario` decimal(10,2) DEFAULT NULL
+  `total` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `oc_detalle`
 --
 
-INSERT INTO `oc_detalle` (`id_detalle`, `id_oc`, `id_material`, `cantidad`, `precio_unitario`) VALUES
-(1, 1, 1, 800.00, 7200.00),
-(2, 1, 2, 300.00, 4100.00),
-(3, 1, 3, 120.00, 18500.00),
-(4, 1, 4, 160.00, 22300.00),
-(5, 1, 8, 12000.00, 950.00),
-(6, 2, 5, 500.00, 12300.00),
-(7, 2, 6, 350.00, 19800.00),
-(8, 2, 7, 90.00, 45000.00),
-(9, 3, 10, 1500.00, 850.00),
-(10, 3, 11, 800.00, 1320.00),
-(11, 3, 12, 500.00, 690.00),
-(12, 4, 13, 120.00, 9800.00),
-(13, 4, 14, 240.00, 3500.00),
-(14, 5, 15, 40.00, 112000.00),
-(15, 5, 16, 60.00, 98000.00),
-(16, 6, 17, 12.00, 185000.00),
-(17, 6, 18, 40.00, 22000.00),
-(18, 6, 19, 80.00, 9800.00),
-(19, 6, 20, 25.00, 45000.00);
+INSERT INTO `oc_detalle` (`id_detalle`, `id_oc`, `id_material`, `cantidad`, `total`) VALUES
+(1, 1, 1, 800.00, NULL),
+(2, 1, 2, 300.00, NULL),
+(3, 1, 3, 120.00, NULL),
+(4, 1, 4, 160.00, NULL),
+(5, 1, 8, 12000.00, NULL),
+(6, 2, 5, 500.00, NULL),
+(7, 2, 6, 350.00, NULL),
+(8, 2, 7, 90.00, NULL),
+(9, 3, 10, 1500.00, NULL),
+(10, 3, 11, 800.00, NULL),
+(11, 3, 12, 500.00, NULL),
+(12, 4, 13, 120.00, NULL),
+(13, 4, 14, 240.00, NULL),
+(14, 5, 15, 40.00, NULL),
+(15, 5, 16, 60.00, NULL),
+(16, 6, 17, 12.00, NULL),
+(17, 6, 18, 40.00, NULL),
+(18, 6, 19, 80.00, NULL),
+(19, 6, 20, 25.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -407,20 +407,21 @@ CREATE TABLE `ordenes_compra` (
   `id_oc` int(11) NOT NULL,
   `id_proveedor` int(11) NOT NULL,
   `fecha_emision` date DEFAULT NULL,
-  `estado` varchar(20) DEFAULT NULL
+  `estado` varchar(20) DEFAULT NULL,
+  `total` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `ordenes_compra`
 --
 
-INSERT INTO `ordenes_compra` (`id_oc`, `id_proveedor`, `fecha_emision`, `estado`) VALUES
-(1, 1, '2026-01-03', 'RECIBIDA'),
-(2, 2, '2026-01-04', 'RECIBIDA'),
-(3, 3, '2026-02-25', 'RECIBIDA'),
-(4, 4, '2026-03-01', 'RECIBIDA'),
-(5, 5, '2026-03-15', 'PENDIENTE'),
-(6, 1, '2026-04-02', 'EMITIDA');
+INSERT INTO `ordenes_compra` (`id_oc`, `id_proveedor`, `fecha_emision`, `estado`, `total`) VALUES
+(1, 1, '2026-01-03', 'RECIBIDA', NULL),
+(2, 2, '2026-01-04', 'RECIBIDA', NULL),
+(3, 3, '2026-02-25', 'RECIBIDA', NULL),
+(4, 4, '2026-03-01', 'RECIBIDA', NULL),
+(5, 5, '2026-03-15', 'PENDIENTE', NULL),
+(6, 1, '2026-04-02', 'EMITIDA', NULL);
 
 -- --------------------------------------------------------
 
@@ -913,7 +914,7 @@ ALTER TABLE `oc_detalle`
 -- AUTO_INCREMENT de la tabla `ordenes_compra`
 --
 ALTER TABLE `ordenes_compra`
-  MODIFY `id_oc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_oc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `presupuestos`
