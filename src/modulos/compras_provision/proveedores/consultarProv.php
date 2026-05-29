@@ -7,7 +7,7 @@ $errores = [];
 $correcto = false;
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $_SESSION["flash_success"] ?? [];
+$flash_success = (array) ($_SESSION["flash_success"] ?? []);
 unset($_SESSION["flash_success"]);
 
 $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
@@ -63,13 +63,12 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
                 <td><?= htmlspecialchars($c["telefono"]) ?></td>
                 <!-- acciones -->
                 <td>
-                    <form action="editarProv.php" method="get">
-                        <input type="hidden" name="id" value="<?= $c[
-                            "id_proveedor"
-                        ] ?>">
-                        <button type="submit">Editar</button>
-                    </form>
-                    <form action="eliminarProv.php" method="get">
+                    <a href="editarProv.php?id=<?= $c[
+                        "id_proveedor"
+                    ] ?>">Editar</a>
+
+                    <form action="eliminarProv.php" method="post" style="display:inline"
+                          onsubmit="return confirm('¿Seguro de que querés eliminar este proveedor?')">
                         <input type="hidden" name="id" value="<?= $c[
                             "id_proveedor"
                         ] ?>">

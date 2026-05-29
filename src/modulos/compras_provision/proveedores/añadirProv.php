@@ -7,8 +7,7 @@ $errores = [];
 $correcto = false;
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $flash_success = $_SESSION["flash_success"] ?? "";
-$_SESSION["flash_success"] ?? [];
+$flash_success = $_SESSION["flash_success"] ?? [];
 unset($_SESSION["flash_success"]);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -73,8 +72,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $telefono,
             ]);
             $pdo->commit();
-            $_SESSION["flash_success"] = "Proveedor añadido correctamente";
-            header("Location: añadirProv.php");
+            $_SESSION["flash_success"] = ["Proveedor añadido correctamente"];
+            header("Location: consultarProv.php");
             exit();
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -107,10 +106,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
     <?php endif; ?>
 
-    <?php if ($flash_success): ?>
-        <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
-            $flash_success,
-        ) ?></div>
+    <?php if (!empty($flash_success)): ?>
+        <?php foreach ($flash_success as $msg): ?>
+            <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
+                $msg,
+            ) ?></div>
+        <?php endforeach; ?>
     <?php endif; ?>
     <h1>Añadir Proveedor</h1>
     <form action="añadirProv.php" method="post">

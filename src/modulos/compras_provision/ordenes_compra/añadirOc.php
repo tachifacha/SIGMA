@@ -6,7 +6,7 @@ $pdo = db::connect();
 $errores = [];
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $_SESSION["flash_success"] ?? "";
+$flash_success = $_SESSION["flash_success"] ?? [];
 unset($_SESSION["flash_success"]);
 
 $proveedores = $pdo
@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             $pdo->commit();
-            $_SESSION["flash_success"] = "Orden de compra creada correctamente";
+            $_SESSION["flash_success"] = ["Orden de compra creada correctamente"];
             header("Location: consultarOc.php");
             exit();
         } catch (PDOException $e) {
@@ -81,8 +81,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <?php endif; ?>
 
-    <?php if ($flash_success): ?>
-        <div class="flash-msg flash-msg--success"><?= htmlspecialchars($flash_success) ?></div>
+    <?php if (!empty($flash_success)): ?>
+        <?php foreach ($flash_success as $msg): ?>
+            <div class="flash-msg flash-msg--success"><?= htmlspecialchars($msg) ?></div>
+        <?php endforeach; ?>
     <?php endif; ?>
 
     <h1>Añadir orden de compra</h1>
