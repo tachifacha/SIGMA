@@ -1,3 +1,6 @@
+// los => se entienden como forma de definir funciones mas acortadas
+// entonces (res => res.json()) es una función que recibe res y devuelve res.json()
+// el nombre del parametro no importa porque JS entiende el orden de promesas
 // espera que cargue el DOM antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
   const materialesAgrupados = {};
@@ -5,11 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const templateFila = document.querySelector(".fila-material.template");
   // carga los materiales desde la API y los agrupa por categoría
   fetch("../api/materiales.php")
-    // """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    // los => se entienden como forma de definir funciones mas acortadas
-    // entonces (res => res.json()) es una función que recibe res y devuelve res.json()
-    // el nombre del parametro no importa porque JS entiende el orden de promesas
-    // """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     .then((res) => res.json())
     // recibe los datos, los llama data y los agrupa por categoría
     .then((data) => {
