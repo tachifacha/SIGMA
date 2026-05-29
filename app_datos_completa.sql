@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 09-05-2026 a las 17:50:46
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 29-05-2026 a las 20:30:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -253,34 +253,36 @@ CREATE TABLE `materiales` (
   `descripcion` text DEFAULT NULL,
   `id_categoria` int(11) DEFAULT NULL,
   `stock_minimo` decimal(10,2) DEFAULT NULL,
-  `unidad_medida` varchar(20) DEFAULT NULL
+  `unidad_medida` varchar(20) DEFAULT NULL,
+  `precio_compra` decimal(10,2) DEFAULT NULL,
+  `precio_venta` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `materiales`
 --
 
-INSERT INTO `materiales` (`id_material`, `nombre`, `descripcion`, `id_categoria`, `stock_minimo`, `unidad_medida`) VALUES
-(1, 'Cemento Portland x 50kg', 'Bolsa de cemento Portland de uso general', 1, 200.00, 'bolsa'),
-(2, 'Cal hidratada x 25kg', 'Cal para revoques y mezclas', 1, 100.00, 'bolsa'),
-(3, 'Arena fina', 'Árido fino para mezcla y terminaciones', 2, 20.00, 'm3'),
-(4, 'Piedra partida 6/20', 'Árido grueso para hormigón', 2, 30.00, 'm3'),
-(5, 'Hierro ADN 8mm', 'Barra de hierro nervado 8 mm', 3, 150.00, 'barra'),
-(6, 'Hierro ADN 12mm', 'Barra de hierro nervado 12 mm', 3, 120.00, 'barra'),
-(7, 'Perfil C 100', 'Perfil galvanizado estructural', 3, 80.00, 'unidad'),
-(8, 'Ladrillo hueco 18x18x33', 'Ladrillo cerámico hueco portante', 4, 3000.00, 'unidad'),
-(9, 'Bloque de hormigón 19x19x39', 'Bloque para cerramiento y muros', 4, 1500.00, 'unidad'),
-(10, 'Cable unipolar 2,5 mm', 'Cable normalizado para instalación eléctrica', 5, 500.00, 'metro'),
-(11, 'Cable unipolar 4 mm', 'Cable para tomas especiales', 5, 300.00, 'metro'),
-(12, 'Caño corrugado 3/4', 'Caño plástico corrugado para embutir', 5, 200.00, 'metro'),
-(13, 'Caño PVC 110 mm', 'Caño PVC para desagüe cloacal', 6, 60.00, 'metro'),
-(14, 'Caño termofusión 20 mm', 'Caño para agua fría/caliente', 6, 120.00, 'metro'),
-(15, 'Pintura látex interior blanco 20L', 'Pintura interior de alto rendimiento', 7, 25.00, 'balde'),
-(16, 'Membrana asfáltica 4 mm', 'Membrana aluminizada para impermeabilización', 8, 40.00, 'rollo'),
-(17, 'Puerta placa interior 80x200', 'Puerta placa marco de chapa', 9, 10.00, 'unidad'),
-(18, 'Casco de seguridad', 'Elemento de protección personal', 10, 30.00, 'unidad'),
-(19, 'Guantes de descarne', 'Guantes reforzados para obra', 10, 50.00, 'par'),
-(20, 'Botas de seguridad', 'Calzado con puntera reforzada', 10, 20.00, 'par');
+INSERT INTO `materiales` (`id_material`, `nombre`, `descripcion`, `id_categoria`, `stock_minimo`, `unidad_medida`, `precio_compra`, `precio_venta`) VALUES
+(1, 'Cemento Portland x 50kg', 'Bolsa de cemento Portland de uso general', 1, 200.00, 'bolsa', 7200.00, 8640.00),
+(2, 'Cal hidratada x 25kg', 'Cal para revoques y mezclas', 1, 100.00, 'bolsa', 4100.00, 4920.00),
+(3, 'Arena fina', 'Árido fino para mezcla y terminaciones', 2, 20.00, 'm3', 18500.00, 22200.00),
+(4, 'Piedra partida 6/20', 'Árido grueso para hormigón', 2, 30.00, 'm3', 22300.00, 26760.00),
+(5, 'Hierro ADN 8mm', 'Barra de hierro nervado 8 mm', 3, 150.00, 'barra', 12300.00, 14760.00),
+(6, 'Hierro ADN 12mm', 'Barra de hierro nervado 12 mm', 3, 120.00, 'barra', 19800.00, 23760.00),
+(7, 'Perfil C 100', 'Perfil galvanizado estructural', 3, 80.00, 'unidad', 45000.00, 54000.00),
+(8, 'Ladrillo hueco 18x18x33', 'Ladrillo cerámico hueco portante', 4, 3000.00, 'unidad', 950.00, 1140.00),
+(9, 'Bloque de hormigón 19x19x39', 'Bloque para cerramiento y muros', 4, 1500.00, 'unidad', 1500.00, 1800.00),
+(10, 'Cable unipolar 2,5 mm', 'Cable normalizado para instalación eléctrica', 5, 500.00, 'metro', 850.00, 1020.00),
+(11, 'Cable unipolar 4 mm', 'Cable para tomas especiales', 5, 300.00, 'metro', 1320.00, 1584.00),
+(12, 'Caño corrugado 3/4', 'Caño plástico corrugado para embutir', 5, 200.00, 'metro', 690.00, 828.00),
+(13, 'Caño PVC 110 mm', 'Caño PVC para desagüe cloacal', 6, 60.00, 'metro', 9800.00, 11760.00),
+(14, 'Caño termofusión 20 mm', 'Caño para agua fría/caliente', 6, 120.00, 'metro', 3500.00, 4200.00),
+(15, 'Pintura látex interior blanco 20L', 'Pintura interior de alto rendimiento', 7, 25.00, 'balde', 112000.00, 134400.00),
+(16, 'Membrana asfáltica 4 mm', 'Membrana aluminizada para impermeabilización', 8, 40.00, 'rollo', 98000.00, 117600.00),
+(17, 'Puerta placa interior 80x200', 'Puerta placa marco de chapa', 9, 10.00, 'unidad', 185000.00, 222000.00),
+(18, 'Casco de seguridad', 'Elemento de protección personal', 10, 30.00, 'unidad', 22000.00, 26400.00),
+(19, 'Guantes de descarne', 'Guantes reforzados para obra', 10, 50.00, 'par', 9800.00, 11760.00),
+(20, 'Botas de seguridad', 'Calzado con puntera reforzada', 10, 20.00, 'par', 45000.00, 54000.00);
 
 -- --------------------------------------------------------
 
@@ -505,11 +507,12 @@ CREATE TABLE `proveedores` (
 --
 
 INSERT INTO `proveedores` (`id_proveedor`, `razon_social`, `cuit`, `direccion`, `telefono`, `email`, `historial_cumplimiento`) VALUES
-(1, 'Corralón El Constructor SA', '30-62345123-7', 'Av. Sarmiento 3200, Resistencia', '3624101001', 'ventas@elconstructor.com.ar', 'Cumple con entregas en tiempo y forma.'),
+(1, 'Corralón El Constructor FACHA', '30-62345123-7', 'Av. Sarmiento 3200, Resistencia', '3624101001', 'ventas@elconstructor.com.ar', 'Cumple con entregas en tiempo y forma.'),
 (2, 'Hierros del Litoral SRL', '30-61234999-4', 'Ruta 16 Km 15, Resistencia', '3624102002', 'pedidos@hierroslitoral.com', 'Buen cumplimiento, con leves demoras en alta demanda.'),
 (3, 'Electricidad Integral SAS', '30-69888777-1', 'French 890, Resistencia', '3624103003', 'comercial@electrointegral.com', 'Entrega rápida y documentación completa.'),
 (4, 'Sanitarios del Nordeste', '30-64567890-2', 'Av. Castelli 2100, Resistencia', '3624104004', 'ventas@sanitariosnordeste.com', 'Excelente atención postventa.'),
-(5, 'Pinturerías Color Hogar', '30-63332221-8', '9 de Julio 1500, Resistencia', '3624105005', 'empresas@colorhogar.com', 'Provee primeras marcas y asesora técnicamente.');
+(5, 'Pinturerías Color Hogar', '30-63332221-8', '9 de Julio 1500, Resistencia', '3624105005', 'empresas@colorhogar.com', 'Provee primeras marcas y asesora técnicamente.'),
+(11, 'hola', '11111111111', 'hola 123', '1111111111', 'tachi@gmail.com', 'fachero');
 
 -- --------------------------------------------------------
 
@@ -910,7 +913,7 @@ ALTER TABLE `oc_detalle`
 -- AUTO_INCREMENT de la tabla `ordenes_compra`
 --
 ALTER TABLE `ordenes_compra`
-  MODIFY `id_oc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_oc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `presupuestos`
@@ -928,7 +931,7 @@ ALTER TABLE `presupuesto_detalle`
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `recepciones`
