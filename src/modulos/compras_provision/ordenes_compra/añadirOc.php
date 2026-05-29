@@ -16,6 +16,7 @@ $proveedores = $pdo
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_proveedor = trim($_POST["id_proveedor"]);
     $fecha_emision = trim($_POST["fecha_emision"]);
+    $total_orden = floatval($_POST["total_orden"] ?? 0);
     $materiales_data = json_decode($_POST["materiales_json"] ?? "[]", true);
 
     if (empty($id_proveedor) || empty($fecha_emision)) {
@@ -30,20 +31,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $pdo->beginTransaction();
             $stmtoc = $pdo->prepare(
-                "INSERT INTO ordenes_compra (id_proveedor, fecha_emision, estado) VALUES (?, ?, 'EMITIDA')",
+                "INSERT INTO ordenes_compra (id_proveedor, fecha_emision, estado, total) VALUES (?, ?, 'EMITIDA', ?)",
             );
-            $stmtoc->execute([$id_proveedor, $fecha_emision]);
+            $stmtoc->execute([$id_proveedor, $fecha_emision, $total_orden]);
             $id_oc = $pdo->lastInsertId();
 
             $stmtDet = $pdo->prepare(
-                "INSERT INTO oc_detalle (id_oc, id_material, cantidad, precio) VALUES (?, ?, ?, ?)",
+                "INSERT INTO oc_detalle (id_oc, id_material, cantidad) VALUES (?, ?, ?)",
             );
             foreach ($materiales_data as $item) {
                 $stmtDet->execute([
                     $id_oc,
                     $item["id_material"],
                     $item["cantidad"],
-                    $item["precio_compra"],
                 ]);
             }
 
@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["flash_success"] = [
                 "Orden de compra creada correctamente",
             ];
-            header("Location: consultarOc.php");
+            header("Location: añadirOc.php");
             exit();
         } catch (PDOException $e) {
             $pdo->rollBack();
@@ -126,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <th colspan="2">Material</th>
                     <th>Cantidad</th>
                     <th>Unidad</th>
-                    <th>Precio Compra</th>
+                    <th>Precio</th>
                     <th>Subtotal</th>
                 </tr>
 
@@ -166,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </table>
 
         <input type="hidden" name="materiales_json" id="materialesJson">
+        <input type="hidden" name="total_orden" id="totalOrdenHidden">
 
         <div class="acciones-form">
             <button type="submit" class="btn-submit">✓ Crear orden de compra</button>
