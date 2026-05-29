@@ -40,23 +40,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // validaciones
     // unicidad proveedor
     $validarProv = $pdo->prepare(
-        "SELECT COUNT(*) FROM proveedores where razon_social=?",
+        "SELECT COUNT(*) FROM proveedores where razon_social=? AND id_proveedor != ?",
     );
-    $validarProv->execute([$razon_social]);
+    $validarProv->execute([$razon_social, $id]);
     if ($validarProv->fetchColumn() > 0) {
         $errores[] = "Proveedor ya existe";
     }
 
     // unicidad CUIT
     $validarCuit = $pdo->prepare(
-        "SELECT COUNT(*) FROM proveedores where cuit=?",
+        "SELECT COUNT(*) FROM proveedores where cuit=? AND id_proveedor != ?",
     );
-    $validarCuit->execute([$cuit]);
+    $validarCuit->execute([$cuit, $id]);
     if ($validarCuit->fetchColumn() > 0) {
         $errores[] = "CUIT ya existe";
     }
     // CUIT once digitos
-    if (strlen($cuit) != 11) {
+    if (strlen($cuit) > 11 && strlen($cuit) < 13) {
         $errores[] = "CUIT debe tener 11 dígitos";
     }
 

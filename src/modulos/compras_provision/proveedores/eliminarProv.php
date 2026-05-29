@@ -4,7 +4,7 @@ require "../../../config/conexion.php";
 
 $pdo = db::connect();
 
-$id = $_POST["id_proveedor"] ?? null;
+$id = $_GET["id_proveedor"] ?? null;
 
 if ($id) {
     try {

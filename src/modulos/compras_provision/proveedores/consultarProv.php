@@ -63,12 +63,18 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
                 <td><?= htmlspecialchars($c["telefono"]) ?></td>
                 <!-- acciones -->
                 <td>
-                    <a href="editarProv.php?id=<?= $c[
-                        "id_proveedor"
-                    ] ?>">Editar</a>
-                    <a href="eliminarProv.php?id=<?= $c[
-                        "id_proveedor"
-                    ] ?>">Eliminar</a>
+                    <form action="editarProv.php" method="get">
+                        <input type="hidden" name="id" value="<?= $c[
+                            "id_proveedor"
+                        ] ?>">
+                        <button type="submit">Editar</button>
+                    </form>
+                    <form action="eliminarProv.php" method="get">
+                        <input type="hidden" name="id" value="<?= $c[
+                            "id_proveedor"
+                        ] ?>">
+                        <button type="submit">Eliminar</button>
+                    </form>
                 </td>
             </tr>
             <?php endforeach; ?>

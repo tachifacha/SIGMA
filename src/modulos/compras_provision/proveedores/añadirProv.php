@@ -135,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <button type="submit">Añadir</button>
     </form>
     <button>
-        <a href="apuntar a index despues">Volver a inicio</a>
+        <a href="consultarProv.php">Volver a inicio</a>
     </button>
 </body>
 </html>
