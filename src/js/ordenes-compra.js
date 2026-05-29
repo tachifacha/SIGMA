@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
           id: mat.id_material,
           nombre: mat.nombre,
           unidad: mat.unidad_medida,
-          precio: parseFloat(mat.precio_compra) || 0,
+          precio: parseFloat(mat.precio_venta) || 0,
         });
       });
       agregarFila();
@@ -136,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // acciones al enviar el formulario
   document.getElementById("ocForm").addEventListener("submit", function (e) {
     const filas = document.querySelectorAll(".fila-material:not(.template)");
     const items = [];
@@ -150,13 +151,19 @@ document.addEventListener("DOMContentLoaded", function () {
           items.push({
             id_material: parseInt(select.value),
             cantidad: cantidad,
-            precio_compra: parseFloat(option.dataset.precio),
+            precio_venta: parseFloat(option.dataset.precio),
           });
         }
       }
     });
 
     document.getElementById("materialesJson").value = JSON.stringify(items);
+
+    let total = 0;
+    items.forEach((item) => {
+      total += item.precio_venta * item.cantidad;
+    });
+    document.getElementById("totalOrdenHidden").value = total;
 
     if (items.length === 0) {
       e.preventDefault();
