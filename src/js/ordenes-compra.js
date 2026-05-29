@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tablaBody = document.querySelector("#tablaOC tbody");
   const templateFila = document.querySelector(".fila-material.template");
   // carga los materiales desde la API y los agrupa por categoría
-  fetch("../api/materiales.php")
+  fetch("../../../api/materiales.php")
     .then((res) => res.json())
     // recibe los datos, los llama data y los agrupa por categoría
     .then((data) => {

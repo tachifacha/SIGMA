@@ -61,7 +61,3 @@ class db
         self::$instance = null;
     }
 } ?>
-<html>
-<h1>hola si anda la conexion</h1>
-
-</html>
