@@ -30,25 +30,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $pdo->beginTransaction();
             $stmtoc = $pdo->prepare(
-                "INSERT INTO ordenes_compra (id_proveedor, fecha_emision, estado) VALUES (?, ?, 'EMITIDA')"
+                "INSERT INTO ordenes_compra (id_proveedor, fecha_emision, estado) VALUES (?, ?, 'EMITIDA')",
             );
             $stmtoc->execute([$id_proveedor, $fecha_emision]);
             $id_oc = $pdo->lastInsertId();
 
             $stmtDet = $pdo->prepare(
-                "INSERT INTO oc_detalle (id_oc, id_material, cantidad, precio) VALUES (?, ?, ?, ?)"
+                "INSERT INTO oc_detalle (id_oc, id_material, cantidad, precio) VALUES (?, ?, ?, ?)",
             );
             foreach ($materiales_data as $item) {
                 $stmtDet->execute([
                     $id_oc,
-                    $item['id_material'],
-                    $item['cantidad'],
-                    $item['precio_compra']
+                    $item["id_material"],
+                    $item["cantidad"],
+                    $item["precio_compra"],
                 ]);
             }
 
             $pdo->commit();
-            $_SESSION["flash_success"] = ["Orden de compra creada correctamente"];
+            $_SESSION["flash_success"] = [
+                "Orden de compra creada correctamente",
+            ];
             header("Location: consultarOc.php");
             exit();
         } catch (PDOException $e) {
@@ -70,20 +72,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Añadir orden de compra</title>
-    <script src="../../js/ordenes-compra.js" defer></script>
+    <script src="../../../js/ordenes-compra.js" defer></script>
 </head>
 <body>
     <?php if (!empty($flash_errors)): ?>
     <div class="flash-messages">
         <?php foreach ($flash_errors as $err): ?>
-            <div class="flash-msg flash-msg--error"><?= htmlspecialchars($err) ?></div>
+            <div class="flash-msg flash-msg--error"><?= htmlspecialchars(
+                $err,
+            ) ?></div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
 
     <?php if (!empty($flash_success)): ?>
         <?php foreach ($flash_success as $msg): ?>
-            <div class="flash-msg flash-msg--success"><?= htmlspecialchars($msg) ?></div>
+            <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
+                $msg,
+            ) ?></div>
         <?php endforeach; ?>
     <?php endif; ?>
 
@@ -103,8 +109,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <select name="id_proveedor" required>
                             <option value="">-- Seleccione proveedor --</option>
                             <?php foreach ($proveedores as $p): ?>
-                                <option value="<?= $p['id_proveedor'] ?>">
-                                    <?= htmlspecialchars($p['razon_social']) ?>
+                                <option value="<?= $p["id_proveedor"] ?>">
+                                    <?= htmlspecialchars($p["razon_social"]) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
