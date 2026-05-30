@@ -6,7 +6,7 @@ $pdo = db::connect();
 $errores = [];
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $_SESSION["flash_success"] ?? "";
+$flash_success = $_SESSION["flash_success"] ?? [];
 unset($_SESSION["flash_success"]);
 
 $proveedores = $pdo
@@ -16,6 +16,7 @@ $proveedores = $pdo
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_proveedor = trim($_POST["id_proveedor"]);
     $fecha_emision = trim($_POST["fecha_emision"]);
+    $total_orden = floatval($_POST["total_orden"] ?? 0);
     $materiales_data = json_decode($_POST["materiales_json"] ?? "[]", true);
 
     if (empty($id_proveedor) || empty($fecha_emision)) {
@@ -30,26 +31,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $pdo->beginTransaction();
             $stmtoc = $pdo->prepare(
-                "INSERT INTO ordenes_compra (id_proveedor, fecha_emision, estado) VALUES (?, ?, 'EMITIDA')"
+                "INSERT INTO ordenes_compra (id_proveedor, fecha_emision, estado, total) VALUES (?, ?, 'EMITIDA', ?)",
             );
-            $stmtoc->execute([$id_proveedor, $fecha_emision]);
+            $stmtoc->execute([$id_proveedor, $fecha_emision, $total_orden]);
             $id_oc = $pdo->lastInsertId();
 
             $stmtDet = $pdo->prepare(
-                "INSERT INTO oc_detalle (id_oc, id_material, cantidad, precio) VALUES (?, ?, ?, ?)"
+                "INSERT INTO oc_detalle (id_oc, id_material, cantidad) VALUES (?, ?, ?)",
             );
             foreach ($materiales_data as $item) {
                 $stmtDet->execute([
                     $id_oc,
-                    $item['id_material'],
-                    $item['cantidad'],
-                    $item['precio_compra']
+                    $item["id_material"],
+                    $item["cantidad"],
                 ]);
             }
 
             $pdo->commit();
-            $_SESSION["flash_success"] = "Orden de compra creada correctamente";
-            header("Location: consultarOc.php");
+            $_SESSION["flash_success"] = [
+                "Orden de compra creada correctamente",
+            ];
+            header("Location: añadirOc.php");
             exit();
         } catch (PDOException $e) {
             $pdo->rollBack();
@@ -70,19 +72,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Añadir orden de compra</title>
-    <script src="../../js/ordenes-compra.js" defer></script>
+    <script src="../../../js/ordenes-compra.js" defer></script>
 </head>
 <body>
     <?php if (!empty($flash_errors)): ?>
     <div class="flash-messages">
         <?php foreach ($flash_errors as $err): ?>
-            <div class="flash-msg flash-msg--error"><?= htmlspecialchars($err) ?></div>
+            <div class="flash-msg flash-msg--error"><?= htmlspecialchars(
+                $err,
+            ) ?></div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
 
-    <?php if ($flash_success): ?>
-        <div class="flash-msg flash-msg--success"><?= htmlspecialchars($flash_success) ?></div>
+    <?php if (!empty($flash_success)): ?>
+        <?php foreach ($flash_success as $msg): ?>
+            <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
+                $msg,
+            ) ?></div>
+        <?php endforeach; ?>
     <?php endif; ?>
 
     <h1>Añadir orden de compra</h1>
@@ -101,8 +109,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <select name="id_proveedor" required>
                             <option value="">-- Seleccione proveedor --</option>
                             <?php foreach ($proveedores as $p): ?>
-                                <option value="<?= $p['id_proveedor'] ?>">
-                                    <?= htmlspecialchars($p['razon_social']) ?>
+                                <option value="<?= $p["id_proveedor"] ?>">
+                                    <?= htmlspecialchars($p["razon_social"]) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -118,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <th colspan="2">Material</th>
                     <th>Cantidad</th>
                     <th>Unidad</th>
-                    <th>Precio Compra</th>
+                    <th>Precio</th>
                     <th>Subtotal</th>
                 </tr>
 
@@ -158,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </table>
 
         <input type="hidden" name="materiales_json" id="materialesJson">
+        <input type="hidden" name="total_orden" id="totalOrdenHidden">
 
         <div class="acciones-form">
             <button type="submit" class="btn-submit">✓ Crear orden de compra</button>

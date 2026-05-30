@@ -1,15 +1,13 @@
+// los => se entienden como forma de definir funciones mas acortadas
+// entonces (res => res.json()) es una función que recibe res y devuelve res.json()
+// el nombre del parametro no importa porque JS entiende el orden de promesas
 // espera que cargue el DOM antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
   const materialesAgrupados = {};
   const tablaBody = document.querySelector("#tablaOC tbody");
   const templateFila = document.querySelector(".fila-material.template");
   // carga los materiales desde la API y los agrupa por categoría
-  fetch("../api/materiales.php")
-    // """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    // los => se entienden como forma de definir funciones mas acortadas
-    // entonces (res => res.json()) es una función que recibe res y devuelve res.json()
-    // el nombre del parametro no importa porque JS entiende el orden de promesas
-    // """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  fetch("../../../api/materiales.php")
     .then((res) => res.json())
     // recibe los datos, los llama data y los agrupa por categoría
     .then((data) => {
@@ -24,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
           id: mat.id_material,
           nombre: mat.nombre,
           unidad: mat.unidad_medida,
-          precio: parseFloat(mat.precio_compra) || 0,
+          precio: parseFloat(mat.precio_venta) || 0,
         });
       });
       agregarFila();
@@ -138,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // acciones al enviar el formulario
   document.getElementById("ocForm").addEventListener("submit", function (e) {
     const filas = document.querySelectorAll(".fila-material:not(.template)");
     const items = [];
@@ -152,13 +151,19 @@ document.addEventListener("DOMContentLoaded", function () {
           items.push({
             id_material: parseInt(select.value),
             cantidad: cantidad,
-            precio_compra: parseFloat(option.dataset.precio),
+            precio_venta: parseFloat(option.dataset.precio),
           });
         }
       }
     });
 
     document.getElementById("materialesJson").value = JSON.stringify(items);
+
+    let total = 0;
+    items.forEach((item) => {
+      total += item.precio_venta * item.cantidad;
+    });
+    document.getElementById("totalOrdenHidden").value = total;
 
     if (items.length === 0) {
       e.preventDefault();

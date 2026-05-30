@@ -7,7 +7,7 @@ $errores = [];
 $correcto = false;
 $flash_errors = $_SESSION["flash_errors"] ?? [];
 unset($_SESSION["flash_errors"]);
-$flash_success = $_SESSION["flash_success"] ?? "";
+$flash_success = $_SESSION["flash_success"] ?? [];
 unset($_SESSION["flash_success"]);
 $provDB = null;
 $id = null;
@@ -40,23 +40,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // validaciones
     // unicidad proveedor
     $validarProv = $pdo->prepare(
-        "SELECT COUNT(*) FROM proveedores where razon_social=?",
+        "SELECT COUNT(*) FROM proveedores where razon_social=? AND id_proveedor != ?",
     );
-    $validarProv->execute([$razon_social]);
+    $validarProv->execute([$razon_social, $id]);
     if ($validarProv->fetchColumn() > 0) {
         $errores[] = "Proveedor ya existe";
     }
 
     // unicidad CUIT
     $validarCuit = $pdo->prepare(
-        "SELECT COUNT(*) FROM proveedores where cuit=?",
+        "SELECT COUNT(*) FROM proveedores where cuit=? AND id_proveedor != ?",
     );
-    $validarCuit->execute([$cuit]);
+    $validarCuit->execute([$cuit, $id]);
     if ($validarCuit->fetchColumn() > 0) {
         $errores[] = "CUIT ya existe";
     }
     // CUIT once digitos
-    if (strlen($cuit) != 11) {
+    if (strlen($cuit) > 11 && strlen($cuit) < 13) {
         $errores[] = "CUIT debe tener 11 dígitos";
     }
 
@@ -92,8 +92,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $id,
             ]);
             $pdo->commit();
-            $_SESSION["flash_success"] = "Proveedor actualizado correctamente";
-            header("Location: editarProv.php?id=" . $id);
+            $_SESSION["flash_success"] = ["Proveedor actualizado correctamente"];
+            header("Location: consultarProv.php");
             exit();
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -124,12 +124,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ) ?></div>
         <?php endforeach; ?>
     </div>
-    <?php endif; ?>
-
-    <?php if ($flash_success): ?>
-        <div class="flash-msg flash-msg--success"><?= htmlspecialchars(
-            $flash_success,
-        ) ?></div>
     <?php endif; ?>
 
     <h1>Editar Proveedor</h1>
