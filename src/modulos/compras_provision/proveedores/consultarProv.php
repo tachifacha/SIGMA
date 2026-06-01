@@ -50,7 +50,7 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
                 <th>Historial de Cumplimiento</th>
                 <th>Direccion</th>
                 <th>Telefono</th>
-                <th>Acciones</th>
+                <th style="width: 180px">Acciones</th>
             </tr>
         </thead>
         <tbody>
