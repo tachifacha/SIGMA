@@ -48,7 +48,6 @@ $consulta = $pdo
     <table border="1">
         <thead>
             <tr>
-                <th>#</th>
                 <th>Proveedor</th>
                 <th>Fecha de Emisión</th>
                 <th>Estado</th>
@@ -59,7 +58,6 @@ $consulta = $pdo
         <tbody>
             <?php foreach ($consulta as $c): ?>
             <tr>
-                <td><?= $c["id_oc"] ?></td>
                 <td><?= htmlspecialchars($c["razon_social"]) ?></td>
                 <td><?= htmlspecialchars($c["fecha_emision"]) ?></td>
                 <td><?= htmlspecialchars($c["estado"]) ?></td>
@@ -69,7 +67,9 @@ $consulta = $pdo
 
                     <form action="eliminarOc.php" method="post" style="display:inline"
                           onsubmit="return confirm('¿Seguro de que querés eliminar esta orden de compra?')">
-                        <input type="hidden" name="id" value="<?= $c["id_oc"] ?>">
+                        <input type="hidden" name="id" value="<?= $c[
+                            "id_oc"
+                        ] ?>">
                         <button type="submit">Eliminar</button>
                     </form>
                 </td>
