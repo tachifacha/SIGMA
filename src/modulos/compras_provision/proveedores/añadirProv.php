@@ -94,6 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Añadir Proveedor</title>
+    <link rel="stylesheet" href="../../../css/sigma.css">
 </head>
 <body>
     <?php if (!empty($flash_errors)): ?>

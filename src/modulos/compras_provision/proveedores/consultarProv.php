@@ -18,6 +18,7 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Proveedores</title>
+    <link rel="stylesheet" href="../../../css/sigma.css">
 </head>
 <body>
     <h1>Consultar Proveedores</h1>
