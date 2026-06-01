@@ -25,7 +25,25 @@ document.addEventListener("DOMContentLoaded", function () {
           precio: parseFloat(mat.precio_venta) || 0,
         });
       });
-      agregarFila();
+      // Pre-cargar materiales existentes (modo edición)
+      const materialesExistentes = document.getElementById("materialesExistentes");
+      if (materialesExistentes && materialesExistentes.value) {
+        const existentes = JSON.parse(materialesExistentes.value);
+        existentes.forEach((mat) => {
+          agregarFila();
+          const ultimaFila = tablaBody.querySelector(
+            ".fila-material:not(.template):last-of-type",
+          );
+          const select = ultimaFila.querySelector(".material-select");
+          select.value = mat.id_material;
+          select.dispatchEvent(new Event("change"));
+          const inputCant = ultimaFila.querySelector(".cantidad-input");
+          inputCant.value = mat.cantidad;
+          inputCant.dispatchEvent(new Event("input"));
+        });
+      } else {
+        agregarFila();
+      }
     })
     .catch((err) => console.error("Error cargando materiales:", err));
 
