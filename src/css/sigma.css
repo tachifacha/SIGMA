@@ -1,0 +1,606 @@
+/* ============================================
+   SIGMA — Industrial Construction UI
+   ============================================
+   Palette:
+     --steel:    #0d0f12  (near-black base)
+     --iron:     #1a1d23  (surface)
+     --plate:    #252830  (elevated surface)
+     --concrete: #3a3f4b  (muted borders)
+     --gravel:   #6b7280  (secondary text)
+     --beam:     #9ca3af  (placeholder text)
+     --zinc:     #e5e7eb  (primary text)
+     --white:    #f9fafb  (headings)
+     --caution:  #f59e0b  (safety yellow — accent)
+     --hazard:   #ef4444  (danger / error)
+     --signal:   #22c55e  (success / OK)
+     --blueprint:#3b82f6  (info / links)
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ── RESET ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── CSS VARIABLES ── */
+:root {
+  --steel:    #0d0f12;
+  --iron:     #1a1d23;
+  --plate:    #252830;
+  --concrete: #3a3f4b;
+  --gravel:   #6b7280;
+  --beam:     #9ca3af;
+  --zinc:     #e5e7eb;
+  --white:    #f9fafb;
+  --caution:  #f59e0b;
+  --caution-dim: #b45309;
+  --hazard:   #ef4444;
+  --hazard-bg:#7f1d1d;
+  --signal:   #22c55e;
+  --signal-bg:#14532d;
+  --blueprint:#3b82f6;
+
+  --font-display: 'Bebas Neue', Impact, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+
+  --radius: 2px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.6);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.7);
+}
+
+/* ── GRAIN OVERLAY (global atmosphere) ── */
+html::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: .035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+/* ── BODY ── */
+body {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--zinc);
+  background: var(--steel);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* subtle grid pattern on body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── LAYOUT SHELL ── */
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--white);
+  line-height: 1.1;
+}
+
+/* ── PAGE TITLE BAR ── */
+h1 {
+  font-size: 2.4rem;
+  padding: 1.5rem 2rem;
+  margin: 0 -2rem 1.5rem;
+  background: linear-gradient(90deg, var(--iron) 0%, transparent 100%);
+  border-bottom: 3px solid var(--caution);
+  position: relative;
+}
+
+/* hazard stripe accent on h1 */
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 120px;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--caution) 0px,
+    var(--caution) 10px,
+    var(--steel) 10px,
+    var(--steel) 20px
+  );
+}
+
+/* ── MAIN CONTENT AREA ── */
+body > h1,
+body > .flash-messages,
+body > form,
+body > table,
+body > button,
+body > a,
+body > div {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* ── FLASH MESSAGES ── */
+.flash-messages {
+  padding: 0 2rem;
+  margin-bottom: 1rem;
+}
+
+.flash-msg {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-left: 4px solid;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slideIn .3s ease-out;
+}
+
+.flash-msg--error {
+  background: var(--hazard-bg);
+  border-color: var(--hazard);
+  color: #fca5a5;
+}
+
+.flash-msg--success {
+  background: var(--signal-bg);
+  border-color: var(--signal);
+  color: #86efac;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── TABLES ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 12px;
+}
+
+thead {
+  background: var(--iron);
+}
+
+thead th {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--caution);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--caution);
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--concrete);
+  transition: background .15s;
+}
+
+tbody tr:hover {
+  background: rgba(245, 158, 11, .04);
+}
+
+tbody td {
+  padding: 0.65rem 1rem;
+  vertical-align: middle;
+}
+
+/* striped rows */
+tbody tr:nth-child(even) {
+  background: rgba(255,255,255,.015);
+}
+
+tbody tr:nth-child(even):hover {
+  background: rgba(245, 158, 11, .04);
+}
+
+/* ── FORMS ── */
+form {
+  background: var(--iron);
+  border: 1px solid var(--concrete);
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--beam);
+  margin-bottom: 0.25rem;
+  margin-top: 1rem;
+}
+
+label:first-child,
+form > label:first-of-type {
+  margin-top: 0;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 0.6rem 0.75rem;
+  background: var(--steel);
+  border: 1px solid var(--concrete);
+  color: var(--zinc);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--caution);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, .2);
+}
+
+input::placeholder {
+  color: var(--gravel);
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+optgroup {
+  font-weight: 700;
+  color: var(--caution);
+}
+
+option {
+  font-weight: 400;
+  color: var(--zinc);
+  background: var(--steel);
+}
+
+/* form row helper — when label + input sit side by side */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── BUTTONS ── */
+button,
+.btn-submit,
+.btn-cancel,
+.btn-agregar-fila {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.5rem;
+  border: 2px solid;
+  cursor: pointer;
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  border-radius: var(--radius);
+}
+
+/* primary / submit */
+button[type="submit"],
+.btn-submit {
+  background: var(--caution);
+  border-color: var(--caution);
+  color: var(--steel);
+  font-weight: 700;
+}
+
+button[type="submit"]:hover,
+.btn-submit:hover {
+  background: #d97706;
+  border-color: #d97706;
+  box-shadow: 0 0 20px rgba(245, 158, 11, .3);
+}
+
+/* secondary / cancel */
+.btn-cancel,
+button:not([type="submit"]):not(.btn-agregar-fila):not(.btn-eliminar-fila) {
+  background: transparent;
+  border-color: var(--concrete);
+  color: var(--beam);
+}
+
+.btn-cancel:hover,
+button:not([type="submit"]):not(.btn-agregar-fila):not(.btn-eliminar-fila):hover {
+  border-color: var(--beam);
+  color: var(--zinc);
+  background: rgba(255,255,255,.03);
+}
+
+/* link-styled buttons */
+button a,
+.btn-cancel a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* add row button (for OC forms) */
+.btn-agregar-fila {
+  background: transparent;
+  border-color: var(--caution);
+  color: var(--caution);
+  width: 100%;
+  justify-content: center;
+  padding: 0.5rem;
+  font-size: .8rem;
+}
+
+.btn-agregar-fila:hover {
+  background: rgba(245, 158, 11, .1);
+}
+
+/* delete row button */
+.btn-eliminar-fila {
+  background: transparent;
+  border: 1px solid var(--hazard);
+  color: var(--hazard);
+  padding: 0.2rem 0.5rem;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all .15s;
+}
+
+.btn-eliminar-fila:hover {
+  background: var(--hazard);
+  color: var(--white);
+}
+
+/* ── OC-specific TABLE (añadirOc / editarOc) ── */
+.tabla-oc {
+  width: 100%;
+  border: 2px solid var(--concrete);
+  background: var(--iron);
+}
+
+.tabla-oc .titulo-oc {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: .15em;
+  text-align: center;
+  color: var(--caution);
+  padding: 1rem;
+  background: var(--steel);
+  border-bottom: 3px solid var(--caution);
+}
+
+.tabla-oc .fila-encabezado td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--concrete);
+}
+
+.tabla-oc .fila-encabezado .label-cell {
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--beam);
+  width: 100px;
+}
+
+.tabla-oc .fila-columnas th {
+  font-family: var(--font-display);
+  font-size: .75rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--caution);
+  padding: 0.5rem 0.75rem;
+  background: var(--steel);
+  border-bottom: 2px solid var(--caution);
+}
+
+.tabla-oc .fila-material td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--concrete);
+}
+
+.tabla-oc .fila-material .material-select {
+  width: 100%;
+}
+
+.tabla-oc .fila-material .cantidad-input {
+  width: 70px;
+}
+
+.tabla-oc .fila-agregar td {
+  padding: 0.75rem;
+  border-top: 1px solid var(--concrete);
+}
+
+.tabla-oc .fila-total td {
+  padding: 0.75rem 1rem;
+  background: var(--steel);
+  border-top: 2px solid var(--caution);
+  font-family: var(--font-display);
+  font-size: .9rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--caution);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.accion-cell {
+  width: 40px;
+  text-align: center;
+}
+
+/* ── ACCIONES FORM (submit + cancel row) ── */
+.acciones-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--concrete);
+}
+
+/* ── LINKS ── */
+a {
+  color: var(--blueprint);
+  text-decoration: none;
+  transition: color .15s;
+}
+
+a:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+/* action links in tables */
+td a[href*="editar"],
+td a[href*="Editar"] {
+  font-family: var(--font-display);
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--blueprint);
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--blueprint);
+  border-radius: var(--radius);
+  transition: all .15s;
+}
+
+td a[href*="editar"]:hover,
+td a[href*="Editar"]:hover {
+  background: var(--blueprint);
+  color: var(--white);
+  text-decoration: none;
+}
+
+/* delete buttons in tables */
+td form {
+  display: inline;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+td form button[type="submit"] {
+  font-family: var(--font-display);
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  border: 1px solid var(--hazard);
+  color: var(--hazard);
+  border-radius: var(--radius);
+  transition: all .15s;
+}
+
+td form button[type="submit"]:hover {
+  background: var(--hazard);
+  color: var(--white);
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--steel);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--concrete);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gravel);
+}
+
+/* ── SELECTION ── */
+::selection {
+  background: rgba(245, 158, 11, .3);
+  color: var(--white);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8rem;
+    padding: 1rem;
+    margin: 0 -1rem 1rem;
+  }
+
+  body > * {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  table {
+    font-size: 11px;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .acciones-form {
+    flex-direction: column;
+  }
+}
