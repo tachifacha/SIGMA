@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "CUIT ya existe";
     }
     // CUIT once digitos
-    if (strlen($cuit) > 11 && strlen($cuit) < 13) {
+    if (strlen($cuit) != 11) {
         $errores[] = "CUIT debe tener 11 dígitos";
     }
 
@@ -158,13 +158,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ) ?>" required>
         <br>
         <label for="telefono">Teléfono:</label>
-        <input type="number" id="telefono" name="telefono" value="<?= htmlspecialchars(
+        <input type="tel" id="telefono" name="telefono" value="<?= htmlspecialchars(
             $provDB["telefono"],
         ) ?>" required>
         <br>
         <button type="submit">Guardar cambios</button>
     </form>
     <?php endif; ?>
-    <button><a href="consultarProv.php">Volver</a></button>
+    <a href="consultarProv.php" class="btn-cancel">Volver al listado</a>
 </body>
 </html>

@@ -132,12 +132,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input type="text" id="direccion" name="direccion" placeholder="Tu Dirección 123" required>
         <br>
         <label for="telefono">Teléfono:</label>
-        <input type="number" id="telefono" name="telefono" placeholder="12345678910" required>
+        <input type="tel" id="telefono" name="telefono" placeholder="3624101001" required>
         <br>
         <button type="submit">Añadir</button>
     </form>
-    <button>
-        <a href="consultarProv.php">Volver a inicio</a>
-    </button>
+    <a href="consultarProv.php" class="btn-cancel">Volver al listado</a>
 </body>
 </html>

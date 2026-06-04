@@ -43,9 +43,9 @@ $consulta = $pdo
     </div>
     <?php endif; ?>
 
-    <button><a href="añadirOc.php">Añadir</a></button>
+    <a href="añadirOc.php" class="btn-submit">Añadir</a>
 
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>Proveedor</th>
@@ -78,6 +78,6 @@ $consulta = $pdo
         </tbody>
     </table>
 
-    <button><a href="añadirOc.php">Volver a inicio</a></button>
+    <a href="consultarOc.php" class="btn-cancel">Volver al listado</a>
 </body>
 </html>

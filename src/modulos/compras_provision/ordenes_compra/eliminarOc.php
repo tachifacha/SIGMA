@@ -6,7 +6,7 @@ $pdo = db::connect();
 
 $id = $_POST["id"] ?? null;
 
-if ($id) {
+if ($id && is_numeric($id)) {
     try {
         $pdo->beginTransaction();
 

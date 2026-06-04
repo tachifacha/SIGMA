@@ -40,8 +40,8 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
         <?php endif; ?>
     </div>
     <?php endif; ?>
-    <button><a href="añadirProv.php">Añadir</a></button>
-    <table border="1">
+    <a href="añadirProv.php" class="btn-submit">Añadir</a>
+    <table>
         <thead>
             <tr>
                 <th>Razon social</th>
@@ -80,8 +80,6 @@ $consulta = $pdo->query("SELECT * FROM proveedores ORDER BY id_proveedor");
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button>
-        <a href="apuntar a index">Volver a inicio</a>
-    </button>
+    <a href="consultarProv.php" class="btn-cancel">Volver al listado</a>
 </body>
 </html>
