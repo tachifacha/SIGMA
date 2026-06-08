@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const materialesAgrupados = {};
   const tablaBody = document.querySelector("#tablaOC tbody");
   const templateFila = document.querySelector(".fila-material.template");
+
   // carga los materiales desde la API y los agrupa por categoría
   fetch("../../../api/materiales.php")
     .then((res) => res.json())
@@ -13,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((data) => {
       data.forEach((mat) => {
         const cat = mat.nombre_categoria || "Sin categoría";
-        // si la categoría no existe, la inicializa como un array vacío
+        // si la categoría no existe, crea array para esa categoria
         if (!materialesAgrupados[cat]) {
           materialesAgrupados[cat] = [];
         }
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
           precio: parseFloat(mat.precio_compra) || 0,
         });
       });
-      // Pre-cargar materiales existentes (modo edición)
+      // Pre-cargar materiales existentes (editarOc)
       const materialesExistentes = document.getElementById("materialesExistentes");
       if (materialesExistentes && materialesExistentes.value) {
         const existentes = JSON.parse(materialesExistentes.value);
@@ -47,57 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch((err) => console.error("Error cargando materiales:", err));
 
-  document
-    .getElementById("agregarFilaBtn")
-    .addEventListener("click", agregarFila);
+  // busca boton agregar fila y queda escuchando si se hace click para ejecutar la funcion agregarFila
+  document.getElementById("agregarFilaBtn").addEventListener("click", agregarFila);
 
-  function agregarFila() {
-    const nuevaFila = templateFila.cloneNode(true);
-    nuevaFila.classList.remove("template");
-    nuevaFila.style.display = "";
-
-    const selectMaterial = nuevaFila.querySelector(".material-select");
-    poblarSelect(selectMaterial);
-
-    selectMaterial.addEventListener("change", function () {
-      const option = this.options[this.selectedIndex];
-      const precio = parseFloat(option?.dataset?.precio) || 0;
-      const unidad = option?.dataset?.unidad || "";
-
-      const fila = this.closest(".fila-material");
-      fila.querySelector(".precio-cell").textContent =
-        "$" + precio.toLocaleString("es-AR");
-      fila.querySelector(".unidad-cell").textContent = unidad;
-
-      fila.querySelector(".hidden-id").value = this.value;
-
-      recalcularFila(fila);
-    });
-
-    const inputCantidad = nuevaFila.querySelector(".cantidad-input");
-    inputCantidad.addEventListener("input", function () {
-      const fila = this.closest(".fila-material");
-      fila.querySelector(".hidden-cant").value = this.value;
-      recalcularFila(fila);
-    });
-
-    nuevaFila
-      .querySelector(".btn-eliminar-fila")
-      .addEventListener("click", function () {
-        const filas = document.querySelectorAll(
-          ".fila-material:not(.template)",
-        );
-        if (filas.length > 1) {
-          nuevaFila.remove();
-          reindexarFilas();
-          calcularTotal();
-        }
-      });
-
-    tablaBody.insertBefore(nuevaFila, document.querySelector(".fila-agregar"));
-    reindexarFilas();
-  }
-
+  // =====================
+  // Funciones auxiliares
+  // =====================
   function poblarSelect(selectEl) {
     // vacia el select y pone un placeholder
     selectEl.innerHTML = '<option value="">-- Seleccione --</option>';
@@ -154,6 +110,56 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // =====================
+  // Función principal de creación de filas
+  // =====================
+  function agregarFila() {
+    // clona nodo plantilla de la fila que estaba oculta, le quita la clase pantilla y luego la muestra
+    const nuevaFila = templateFila.cloneNode(true);
+    nuevaFila.classList.remove("template");
+    nuevaFila.style.display = "";
+
+    // busca select de materiales que en documento aparece vacio y lo pobla
+    const selectMaterial = nuevaFila.querySelector(".material-select");
+    poblarSelect(selectMaterial);
+    // codigo a realizar si se cambia el material
+    selectMaterial.addEventListener("change", function () {
+      const option = this.options[this.selectedIndex];
+      const precio = parseFloat(option?.dataset?.precio) || 0;
+      const unidad = option?.dataset?.unidad || "";
+
+      const fila = this.closest(".fila-material");
+      fila.querySelector(".precio-cell").textContent =
+        "$" + precio.toLocaleString("es-AR");
+      fila.querySelector(".unidad-cell").textContent = unidad;
+
+      fila.querySelector(".hidden-id").value = this.value;
+
+      recalcularFila(fila);
+    });
+    // busca el input de cantidad de materiales y escucha cada vez que cambia el valor
+    const inputCantidad = nuevaFila.querySelector(".cantidad-input");
+    inputCantidad.addEventListener("input", function () {
+      // busca contenedor fila material y asigna en hidden el mismo valor que usuario escribio
+      const fila = this.closest(".fila-material");
+      fila.querySelector(".hidden-cant").value = this.value;
+      recalcularFila(fila);
+    });
+
+    // codigo que se ejectua al eliminar una fila
+    nuevaFila.querySelector(".btn-eliminar-fila").addEventListener("click", function () {
+      const filas = document.querySelectorAll(".fila-material:not(.template)");
+      if (filas.length > 1) {
+        nuevaFila.remove();
+        reindexarFilas();
+        calcularTotal();
+      }
+    });
+
+    tablaBody.insertBefore(nuevaFila, document.querySelector(".fila-agregar"));
+    reindexarFilas();
+  }
+
   // acciones al enviar el formulario
   document.getElementById("ocForm").addEventListener("submit", function (e) {
     const filas = document.querySelectorAll(".fila-material:not(.template)");
@@ -163,8 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const select = fila.querySelector(".material-select");
       if (select.value) {
         const option = select.options[select.selectedIndex];
-        const cantidad =
-          parseInt(fila.querySelector(".cantidad-input").value) || 0;
+        const cantidad = parseInt(fila.querySelector(".cantidad-input").value) || 0;
         if (cantidad > 0) {
           items.push({
             id_material: parseInt(select.value),
